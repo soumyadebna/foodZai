@@ -1,16 +1,65 @@
-# Food_Ai
+# FoodZai - AI-Powered Nutrition Tracking App
 
-A new Flutter project.
+FoodZai is a Flutter-based mobile application that uses AI to help users track their nutrition and calorie intake. The app allows users to take photos of their food, and the AI will identify the food items and provide nutritional information.
+
+## Features
+
+- **Photo-to-Calorie**: Take a photo of your food, and the app will identify it and provide nutritional information
+- **Voice Input**: Describe your food using voice, and the app will calculate the nutritional content
+- **Daily Nutrition Tracking**: Track your daily calorie intake and macronutrients
+- **Water Intake Tracking**: Monitor your daily water consumption
+- **Meal Planning**: Set meal times and receive notifications
+- **Personalized Goals**: Set weight goals and track your progress
+- **User Profiles**: Create and manage your profile with personal information
+
+## Technologies Used
+
+- Flutter for cross-platform mobile development
+- Firebase for authentication and data storage
+- AI-powered food recognition
+- Voice recognition for food input
+- Material Design for UI/UX
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter SDK
+- Dart SDK
+- Android Studio or VS Code
+- iOS Simulator or Android Emulator
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repository:
+   ```
+   git clone https://github.com/soumyadebna/foodZai.git
+   ```
+
+2. Navigate to the project directory:
+   ```
+   cd foodZai
+   ```
+
+3. Install dependencies:
+   ```
+   flutter pub get
+   ```
+
+4. Run the app:
+   ```
+   flutter run
+   ```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Thanks to all the contributors who have helped with the development of this app
+- Special thanks to the Flutter and Firebase communities for their excellent documentation and support

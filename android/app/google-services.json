@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "28592004839",
+    "project_id": "foodai12",
+    "storage_bucket": "foodai12.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28592004839:android:a7fb2176174366d1670c42",
+        "android_client_info": {
+          "package_name": "com.example.foodai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXUDUeKbigrSH9yZOgn4xWEnAA4peeWmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,59 @@
+def PLUGIN = "flutter_local_notifications"
+def ANDROIDX_WARNING = "flutterPluginAndroidXWarning"
+gradle.buildFinished { buildResult ->
+    if (buildResult.failure && !rootProject.ext.has(ANDROIDX_WARNING)) {
+        println '         *********************************************************'
+        println 'WARNING: This version of ' + PLUGIN + ' requires the AndroidX'
+        println 'Warning: Gradle build failed with message: ' + buildResult.failure.message
+        println '         *********************************************************'
+        rootProject.ext.set(ANDROIDX_WARNING, true)
+    }
+}
+
+group 'com.dexterous.flutterlocalnotifications'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.3.0'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    // Add this line to fix the namespace issue
+    namespace 'com.dexterous.flutterlocalnotifications'
+    
+    compileSdkVersion 33
+
+    defaultConfig {
+        minSdkVersion 16
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    dependencies {
+        implementation 'androidx.core:core:1.7.0'
+        implementation 'androidx.media:media:1.6.0'
+        implementation 'androidx.appcompat:appcompat:1.5.1'
+        testImplementation 'junit:junit:4.13.2'
+        testImplementation 'org.mockito:mockito-core:5.0.0'
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
