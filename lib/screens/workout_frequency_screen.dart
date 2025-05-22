@@ -141,7 +141,7 @@ class _WorkoutFrequencyScreenState extends State<WorkoutFrequencyScreen> {
                             _selectedFrequency = option['value'];
                           });
                         },
-                      )fadeIn(
+                      ).animate().fadeIn( // Correctly apply animation
                         delay: Duration(milliseconds: 300 + (index * 100)),
                         duration: 500.ms,
                       ),
@@ -247,7 +247,7 @@ class _WorkoutFrequencyScreenState extends State<WorkoutFrequencyScreen> {
                 Icons.check_circle,
                 color: Theme.of(context).colorScheme.primary,
                 size: 24,
-              ), end: const Offset(1.0, 1.0)),
+              ).animate().scale(duration: 300.ms, curve: Curves.elasticOut), // Added scale animation
           ],
         ),
       ),

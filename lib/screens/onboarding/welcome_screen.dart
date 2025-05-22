@@ -49,11 +49,7 @@ class WelcomeScreen extends StatelessWidget {
           height: 100,
         ),
       ),
-    ), end: const Offset(1.0, 1.0), 
-          begin: const Offset(0.8, 0.8),
-          end: const Offset(1.0, 1.0),
-          duration: 600.ms,
-        );
+    ).animate().scale(duration: 600.ms, begin: const Offset(0.8, 0.8), end: const Offset(1.0, 1.0));
   }
 
   Widget _buildTitle() {
@@ -65,7 +61,8 @@ class WelcomeScreen extends StatelessWidget {
         color: Colors.black,
       ),
       textAlign: TextAlign.center,
-    )moveY(
+    ).animate().moveY(
+    ).animate().moveY(
           begin: 20,
           end: 0,
           duration: 600.ms,
@@ -114,7 +111,7 @@ class WelcomeScreen extends StatelessWidget {
           ),
         ),
       ),
-    )moveY(
+    ).animate().moveY(
           begin: 20,
           end: 0,
           duration: 600.ms,

@@ -95,12 +95,7 @@ class _TransitionScreenState extends State<TransitionScreen> {
                   ],
                 ),
               ),
-            ), end: const Offset(1.0, 1.0), 
-              duration: 600.ms,
-              curve: Curves.easeOutBack,
-              begin: const Offset(0.0, 0.0),
-              end: const Offset(1.0, 1.0),
-            ),
+            ).animate().fadeIn(duration: 600.ms).slide(begin: const Offset(0, 0.2), end: Offset.zero, duration: 600.ms, curve: Curves.easeOutBack),
             
             const SizedBox(height: 24),
             
@@ -112,7 +107,7 @@ class _TransitionScreenState extends State<TransitionScreen> {
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
-            )fadeIn(
+            ).animate().fadeIn(
               duration: 600.ms,
               delay: 200.ms,
             ),
@@ -126,7 +121,7 @@ class _TransitionScreenState extends State<TransitionScreen> {
                 fontSize: 16,
                 color: Colors.white.withOpacity(0.8),
               ),
-            )fadeIn(
+            ).animate().fadeIn(
               duration: 600.ms,
               delay: 400.ms,
             ),
@@ -136,7 +131,7 @@ class _TransitionScreenState extends State<TransitionScreen> {
             // Loading indicator
             const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            )fadeIn(
+            ).animate().fadeIn(
               duration: 600.ms,
               delay: 600.ms,
             ),

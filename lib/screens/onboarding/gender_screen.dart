@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../models/user_model.dart';
+import '../../utils/constants.dart'; // Added AppColors import
 
 class GenderScreen extends StatefulWidget {
   final UserModel user;

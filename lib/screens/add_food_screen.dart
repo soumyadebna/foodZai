@@ -416,10 +416,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
           ),
         ),
       ),
-    )fadeIn(
+    ).animate().fadeIn( // Correctly apply fadeIn to the Card (Container)
       delay: Duration(milliseconds: 100 * index),
-      duration: 400.ms,
-    ),
       duration: 400.ms,
     );
   }
