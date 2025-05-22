@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../models/food_item.dart';
 import '../services/user_service.dart';
 import '../services/food_recognition_service.dart';
+import '../utils/m3_animations.dart'; // For M3 animation constants
 
 class AddFoodScreen extends StatefulWidget {
   final String? initialMealType;
@@ -33,8 +33,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   @override
   void initState() {
     super.initState();
-    // Set the initial meal type if provided
-    if (widget.initialMealType != null) {
+    if (widget.initialMealType != null && _mealTypes.contains(widget.initialMealType)) {
       _selectedMealType = widget.initialMealType!;
     }
     _loadSuggestedFoods();
@@ -51,7 +50,6 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       _isLoading = true;
     });
 
-    // Get suggested foods for the selected meal type
     final suggestedFoods = _foodRecognitionService.getSuggestedFoods(_selectedMealType);
 
     setState(() {
@@ -65,56 +63,62 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       _isLoading = true;
     });
 
-    // Add the food item to the user's data
     await _userService.addFoodItem(foodItem);
 
     setState(() {
       _isLoading = false;
     });
 
-    // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '${foodItem.name} added to your diary',
-          style: GoogleFonts.poppins(),
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${foodItem.name} added to your diary',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                ),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
+          behavior: SnackBarBehavior.floating, // M3 style
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), // M3 radius
+          duration: const Duration(seconds: 2),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         title: Text(
           'Add Food',
-          style: GoogleFonts.poppins(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
+          style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
+        backgroundColor: colorScheme.surface, // M3 AppBar color
+        elevation: 0, // M3 typically has 0 elevation for non-scrolled app bars
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back_ios_new, color: colorScheme.onSurface), // M3 back icon
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.camera_alt),
+            icon: Icon(Icons.camera_alt_outlined, color: colorScheme.onSurface), // M3 icon
             onPressed: () {
-              // Navigate to camera screen
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
                     'Camera functionality coming soon',
-                    style: GoogleFonts.poppins(),
+                     style: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface),
                   ),
+                  backgroundColor: colorScheme.inverseSurface,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   duration: const Duration(seconds: 2),
                 ),
               );
@@ -125,164 +129,32 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Meal type selector
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            color: Colors.white,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'Select Meal Type',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 50,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    itemCount: _mealTypes.length,
-                    itemBuilder: (context, index) {
-                      final mealType = _mealTypes[index];
-                      final isSelected = mealType == _selectedMealType;
-
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedMealType = mealType;
-                            });
-                            _loadSuggestedFoods();
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            decoration: BoxDecoration(
-                              color: isSelected ? Theme.of(context).colorScheme.primary : Colors.white,
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey.shade300,
-                                width: 1,
-                              ),
-                              boxShadow: isSelected ? [
-                                BoxShadow(
-                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ] : null,
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              mealType,
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: isSelected ? Colors.white : Colors.black87,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-
+          _buildMealTypeSelector(context),
           const SizedBox(height: 16),
-
-          // Search bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search for food...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                  },
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(
-                    color: Colors.grey[300]!,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(
-                    color: Colors.grey[300]!,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                filled: true,
-                fillColor: Colors.grey[100],
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              onSubmitted: (value) {
-                // Search for food
-                if (value.isNotEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Food search coming soon',
-                        style: GoogleFonts.poppins(),
-                      ),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                }
-              },
-            ),
-          ),
-
+          _buildSearchBar(context),
           const SizedBox(height: 24),
-
-          // Suggested foods
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               'Suggested Foods',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
+              style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface),
+            ).animate().fadeIn(delay: M3Animations.shortDelay * 2, duration: M3Animations.medium),
           ),
-
           const SizedBox(height: 16),
-
-          // Food items list
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(child: CircularProgressIndicator(color: colorScheme.primary))
                 : _suggestedFoods.isEmpty
-                    ? _buildEmptyState()
+                    ? _buildEmptyState(context)
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         itemCount: _suggestedFoods.length,
                         itemBuilder: (context, index) {
                           final foodItem = _suggestedFoods[index];
-                          return _buildFoodItemCard(foodItem, index);
+                          return _buildFoodItemCard(context, foodItem, index)
+                              .animate()
+                              .fadeIn(delay: Duration(milliseconds: 50 * index) + M3Animations.mediumDelay, duration: M3Animations.medium)
+                              .slideY(begin: 0.1, curve: Curves.easeOut);
                         },
                       ),
           ),
@@ -291,136 +163,230 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildMealTypeSelector(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          )
+        ]
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Select Meal Type',
+              style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 48, // Adjusted height for FilterChip
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12), // Padding for chips
+              itemCount: _mealTypes.length,
+              itemBuilder: (context, index) {
+                final mealType = _mealTypes[index];
+                final isSelected = mealType == _selectedMealType;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0), // Spacing between chips
+                  child: FilterChip(
+                    label: Text(mealType),
+                    selected: isSelected,
+                    onSelected: (_) {
+                      setState(() {
+                        _selectedMealType = mealType;
+                      });
+                      _loadSuggestedFoods();
+                    },
+                    backgroundColor: colorScheme.surfaceVariant.withOpacity(0.5),
+                    selectedColor: colorScheme.primaryContainer,
+                    labelStyle: textTheme.labelLarge?.copyWith(
+                      color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
+                    ),
+                    checkmarkColor: isSelected ? colorScheme.onPrimaryContainer : null,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16), // M3 radius
+                      side: BorderSide(
+                        color: isSelected ? colorScheme.primaryContainer : colorScheme.outline.withOpacity(0.5),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: M3Animations.medium).slideY(begin: -0.1, curve: Curves.easeOut);
+  }
+
+  Widget _buildSearchBar(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: TextField(
+        controller: _searchController,
+        style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
+        decoration: InputDecoration(
+          hintText: 'Search for food...',
+          hintStyle: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+          prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: Icon(Icons.clear, color: colorScheme.onSurfaceVariant),
+                  onPressed: () {
+                    _searchController.clear();
+                    // Optionally, reload suggested foods or clear search results
+                  },
+                )
+              : null,
+          filled: true,
+          fillColor: colorScheme.surfaceVariant.withOpacity(0.5),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16), // M3 radius
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: colorScheme.primary, width: 2),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18), // M3 typical padding
+        ),
+        onChanged: (value) {
+           // Update suffix icon visibility
+          setState(() {});
+          // Implement search logic if needed, or rely on onSubmitted
+        },
+        onSubmitted: (value) {
+          if (value.isNotEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Food search coming soon', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface)),
+                backgroundColor: colorScheme.inverseSurface,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          }
+        },
+      ),
+    ).animate().fadeIn(delay: M3Animations.shortDelay, duration: M3Animations.medium).slideY(begin: 0.1, curve: Curves.easeOut);
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.no_food,
+            Icons.restaurant_menu_outlined, // M3 icon
             size: 64,
-            color: Colors.grey[400],
+            color: colorScheme.onSurfaceVariant.withOpacity(0.6),
           ),
           const SizedBox(height: 16),
           Text(
             'No suggested foods',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[600],
-            ),
+            style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 8),
           Text(
-            'Try selecting a different meal type',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey[500],
-            ),
+            'Try selecting a different meal type or use search.',
+            style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant.withOpacity(0.8)),
             textAlign: TextAlign.center,
           ),
         ],
-      ),
+      ).animate().fadeIn(duration: M3Animations.long),
     );
   }
 
-  Widget _buildFoodItemCard(FoodItem foodItem, int index) {
-    return Container(
+  Widget _buildFoodItemCard(BuildContext context, FoodItem foodItem, int index) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Card( // Using M3 Card
+      elevation: 0.5, // Subtle elevation for M3 cards
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => _addFoodItem(foodItem),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                // Food image
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    foodItem.imageUrl,
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 80,
-                        height: 80,
-                        color: Colors.grey[300],
-                        child: Icon(
-                          Icons.image_not_supported,
-                          color: Colors.grey[500],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                const SizedBox(width: 16),
-
-                // Food details
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        foodItem.name,
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), // M3 radius
+      color: colorScheme.surface,
+      clipBehavior: Clip.antiAlias, // For InkWell ripple
+      child: InkWell(
+        onTap: () => _addFoodItem(foodItem),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12), // M3 radius
+                child: Image.network(
+                  foodItem.imageUrl,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: 80,
+                      height: 80,
+                      color: colorScheme.surfaceVariant,
+                      child: Icon(
+                        Icons.image_not_supported_outlined, // M3 icon
+                        color: colorScheme.onSurfaceVariant,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${foodItem.calories} kcal',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'P: ${foodItem.protein.toInt()}g · C: ${foodItem.carbs.toInt()}g · F: ${foodItem.fat.toInt()}g',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
-
-                // Add button
-                IconButton(
-                  icon: const Icon(Icons.add_circle),
-                  color: Theme.of(context).colorScheme.primary,
-                  onPressed: () => _addFoodItem(foodItem),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      foodItem.name,
+                      style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${foodItem.calories} kcal',
+                      style: textTheme.bodyMedium?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'P: ${foodItem.protein.toInt()}g · C: ${foodItem.carbs.toInt()}g · F: ${foodItem.fat.toInt()}g',
+                      style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              IconButton(
+                icon: Icon(Icons.add_circle_outline_rounded, size: 28), // M3 icon
+                color: colorScheme.primary,
+                onPressed: () => _addFoodItem(foodItem),
+                tooltip: 'Add ${foodItem.name}',
+              ),
+            ],
           ),
         ),
       ),
-    )fadeIn(
-      delay: Duration(milliseconds: 100 * index),
-      duration: 400.ms,
-    ),
-      duration: 400.ms,
     );
   }
 }

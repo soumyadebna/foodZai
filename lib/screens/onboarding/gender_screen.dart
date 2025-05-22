@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart'; // Keep for CupertinoDatePicker if needed, though custom is used
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../models/user_model.dart';
+import '../../utils/m3_animations.dart'; // For M3 animation constants
+import '../../utils/constants.dart'; // For AppColors (will be replaced by theme colors)
 
 class GenderScreen extends StatefulWidget {
   final UserModel user;
@@ -23,14 +24,13 @@ class GenderScreen extends StatefulWidget {
 }
 
 class _GenderScreenState extends State<GenderScreen> {
-  String _selectedGender = 'male';
-  DateTime _selectedDate = DateTime(1990, 1, 1);
+  String _selectedGender = 'male'; // Default or from widget.user
+  DateTime _selectedDate = DateTime(1990, 1, 1); // Default or from widget.user
 
   @override
   void initState() {
     super.initState();
-    // Initialize with existing user data if available
-    if (widget.user.gender != null) {
+    if (widget.user.gender != null && widget.user.gender!.isNotEmpty) {
       _selectedGender = widget.user.gender!;
     }
     if (widget.user.dateOfBirth != null) {
@@ -40,13 +40,16 @@ class _GenderScreenState extends State<GenderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios, color: colorScheme.onSurface),
           onPressed: widget.onBack,
         ),
       ),
@@ -56,17 +59,17 @@ class _GenderScreenState extends State<GenderScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildProgressIndicator(),
+              _buildProgressIndicator(context).animate().fadeIn(duration: M3Animations.medium),
               const SizedBox(height: 32),
-              _buildTitle(),
+              _buildTitle(context).animate().fadeIn(delay: M3Animations.shortDelay, duration: M3Animations.medium).slideY(begin: 0.2, duration: M3Animations.medium, curve: Curves.easeOut),
               const SizedBox(height: 8),
-              _buildSubtitle(),
+              _buildSubtitle(context).animate().fadeIn(delay: M3Animations.shortDelay * 2, duration: M3Animations.medium).slideY(begin: 0.2, duration: M3Animations.medium, curve: Curves.easeOut),
               const SizedBox(height: 40),
-              _buildGenderSelection(),
+              _buildGenderSelection(context).animate().fadeIn(delay: M3Animations.shortDelay * 3, duration: M3Animations.medium).slideY(begin: 0.2, duration: M3Animations.medium, curve: Curves.easeOut),
               const SizedBox(height: 40),
-              _buildDateOfBirthSection(),
+              _buildDateOfBirthSection(context).animate().fadeIn(delay: M3Animations.shortDelay * 4, duration: M3Animations.medium).slideY(begin: 0.2, duration: M3Animations.medium, curve: Curves.easeOut),
               const Spacer(),
-              _buildNextButton(),
+              _buildNextButton(context).animate().fadeIn(delay: M3Animations.shortDelay * 5, duration: M3Animations.medium).slideY(begin: 0.2, duration: M3Animations.medium, curve: Curves.easeOut),
             ],
           ),
         ),
@@ -74,82 +77,78 @@ class _GenderScreenState extends State<GenderScreen> {
     );
   }
 
-  Widget _buildProgressIndicator() {
+  Widget _buildProgressIndicator(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      height: 6,
+      height: 8, // M3 typical progress bar height
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(3),
+        color: colorScheme.surfaceVariant, // M3 color
+        borderRadius: BorderRadius.circular(4), // M3 radius
       ),
       child: Row(
         children: [
           Expanded(
-            flex: 1,
+            flex: 1, // Assuming this screen is the first step after welcome
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(3),
+                color: colorScheme.primary, // M3 color
+                borderRadius: BorderRadius.circular(4), // M3 radius
               ),
             ),
           ),
-          const Expanded(flex: 4, child: SizedBox()),
+          const Expanded(flex: 4, child: SizedBox()), // Adjust flex based on number of onboarding steps
         ],
       ),
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Text(
       'Tell us about yourself',
-      style: GoogleFonts.poppins(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-      ),
+      style: textTheme.headlineSmall?.copyWith(color: colorScheme.onBackground),
     );
   }
 
-  Widget _buildSubtitle() {
+  Widget _buildSubtitle(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Text(
-      'We need this information to calculate your nutrition needs accurately',
-      style: GoogleFonts.poppins(
-        fontSize: 16,
-        color: Colors.grey[600],
-      ),
+      'We need this information to calculate your nutrition needs accurately.',
+      style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
     );
   }
 
-  Widget _buildGenderSelection() {
+  Widget _buildGenderSelection(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Gender',
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
+          style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
         ),
         const SizedBox(height: 16),
         Row(
           children: [
             Expanded(
               child: _buildGenderCard(
+                context,
                 'Male',
                 'male',
                 Icons.male_rounded,
-                Colors.blue[100]!,
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: _buildGenderCard(
+                context,
                 'Female',
                 'female',
                 Icons.female_rounded,
-                Colors.pink[100]!,
               ),
             ),
           ],
@@ -158,7 +157,9 @@ class _GenderScreenState extends State<GenderScreen> {
     );
   }
 
-  Widget _buildGenderCard(String title, String value, IconData icon, Color color) {
+  Widget _buildGenderCard(BuildContext context, String title, String value, IconData icon) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final isSelected = _selectedGender == value;
 
     return GestureDetector(
@@ -166,15 +167,16 @@ class _GenderScreenState extends State<GenderScreen> {
         setState(() {
           _selectedGender = value;
         });
+        HapticFeedback.lightImpact();
       },
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16), // Increased padding
         decoration: BoxDecoration(
-          color: isSelected ? color : Colors.grey[100],
-          borderRadius: BorderRadius.circular(16),
+          color: isSelected ? colorScheme.primaryContainer : colorScheme.surfaceVariant,
+          borderRadius: BorderRadius.circular(16), // M3 typical radius
           border: Border.all(
-            color: isSelected ? color.withOpacity(0.5) : Colors.grey[300]!,
-            width: 2,
+            color: isSelected ? colorScheme.primaryContainer : colorScheme.outline,
+            width: isSelected ? 2 : 1, // Emphasize selection
           ),
         ),
         child: Column(
@@ -183,15 +185,14 @@ class _GenderScreenState extends State<GenderScreen> {
             Icon(
               icon,
               size: 48,
-              color: isSelected ? color.withOpacity(0.8) : Colors.grey[400],
+              color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12), // Adjusted spacing
             Text(
               title,
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? Colors.black : Colors.grey[600],
+              style: textTheme.labelLarge?.copyWith(
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -200,8 +201,9 @@ class _GenderScreenState extends State<GenderScreen> {
     );
   }
 
-  Widget _buildDateOfBirthSection() {
-    // Calculate age
+  Widget _buildDateOfBirthSection(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final now = DateTime.now();
     final age = now.year - _selectedDate.year -
       (now.month > _selectedDate.month ||
@@ -212,74 +214,57 @@ class _GenderScreenState extends State<GenderScreen> {
       children: [
         Text(
           'Date of Birth',
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
+          style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
         ),
         const SizedBox(height: 16),
         GestureDetector(
-          onTap: _showDatePicker,
+          onTap: () => _showCustomDatePicker(context),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey[300]!),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              color: colorScheme.surface, // M3 surface
+              borderRadius: BorderRadius.circular(16), // M3 radius
+              border: Border.all(color: colorScheme.outline), // M3 outline
             ),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10), // Adjusted padding
                   decoration: BoxDecoration(
-                    color: AppColors.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(12), // M3 radius
                   ),
                   child: Icon(
                     Icons.calendar_today,
-                    color: AppColors.primaryColor,
+                    color: colorScheme.onPrimaryContainer,
                     size: 20,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      DateFormat('MMMM d, yyyy').format(_selectedDate),
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
+                const SizedBox(width: 16), // Adjusted spacing
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        DateFormat('MMMM d, yyyy').format(_selectedDate),
+                        style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
                       ),
-                    ),
-                    Text(
-                      '$age years old',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                      Text(
+                        '$age years old',
+                        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const Spacer(),
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10), // Adjusted padding
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
+                    color: colorScheme.secondaryContainer, // M3 color
+                    borderRadius: BorderRadius.circular(12), // M3 radius
                   ),
                   child: Icon(
-                    Icons.edit,
-                    color: Colors.grey[600],
+                    Icons.edit_outlined, // M3 icon
+                    color: colorScheme.onSecondaryContainer, // M3 color
                     size: 20,
                   ),
                 ),
@@ -291,213 +276,130 @@ class _GenderScreenState extends State<GenderScreen> {
     );
   }
 
-  Future<void> _showDatePicker() async {
-    // Use a direct, mobile-friendly approach with three number pickers
-    // This is much easier to use on mobile devices
+  Future<void> _showCustomDatePicker(BuildContext context) async {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
-    // Initialize with current selected date
-    int selectedYear = _selectedDate.year;
-    int selectedMonth = _selectedDate.month;
-    int selectedDay = _selectedDate.day;
+    int tempYear = _selectedDate.year;
+    int tempMonth = _selectedDate.month;
+    int tempDay = _selectedDate.day;
 
-    // Show a bottom sheet with three number pickers
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
+      backgroundColor: Colors.transparent, // Make it transparent for custom shape
+      builder: (BuildContext modalContext) { // Use modalContext
+        return StatefulBuilder( // Wrap with StatefulBuilder for modal state
+          builder: (BuildContext context, StateSetter setModalState) {
             return Container(
-              height: MediaQuery.of(context).size.height * 0.7,
+              height: MediaQuery.of(context).size.height * 0.65, // Adjusted height
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colorScheme.surface, // M3 surface color
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
+                  topLeft: Radius.circular(28), // M3 radius
+                  topRight: Radius.circular(28), // M3 radius
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
               ),
               child: Column(
                 children: [
                   // Drag handle
                   Container(
-                    width: 40,
+                    width: 32,
                     height: 4,
-                    margin: const EdgeInsets.only(top: 16, bottom: 8),
+                    margin: const EdgeInsets.only(top: 16, bottom: 16), // M3 spacing
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: colorScheme.onSurfaceVariant.withOpacity(0.4), // M3 color
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-
-                  // Title
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
                     child: Text(
                       'Select Date of Birth',
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
+                      style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface),
                     ),
                   ),
-
-                  // Date display
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withOpacity(0.1),
+                      color: colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Center(
                       child: Text(
-                        DateFormat('MMMM d, yyyy').format(DateTime(selectedYear, selectedMonth, selectedDay)),
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.primaryColor,
-                        ),
+                        DateFormat('MMMM d, yyyy').format(DateTime(tempYear, tempMonth, tempDay)),
+                        style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimaryContainer),
                       ),
                     ),
                   ),
-
-                  // Pickers
                   Expanded(
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start, // Align pickers to top
                       children: [
-                        // Month picker
-                        Expanded(
-                          child: _buildWheelPicker(
-                            context: context,
-                            items: List.generate(
-                              12,
-                              (index) => DateFormat('MMM').format(DateTime(2000, index + 1)),
-                            ),
-                            selectedIndex: selectedMonth - 1,
-                            onChanged: (index) {
-                              setState(() {
-                                selectedMonth = index + 1;
-                                // Adjust day if needed
-                                final daysInMonth = DateTime(selectedYear, selectedMonth + 1, 0).day;
-                                if (selectedDay > daysInMonth) {
-                                  selectedDay = daysInMonth;
-                                }
-                              });
-                              HapticFeedback.selectionClick();
-                            },
-                            fontSize: 18,
-                          ),
+                        _buildDatePickerWheel(
+                          context: modalContext, // Use modalContext
+                          items: List.generate(12, (index) => DateFormat('MMM').format(DateTime(2000, index + 1))),
+                          initialItem: tempMonth - 1,
+                          onSelectedItemChanged: (index) {
+                            setModalState(() {
+                              tempMonth = index + 1;
+                              final daysInMonth = DateTime(tempYear, tempMonth + 1, 0).day;
+                              if (tempDay > daysInMonth) tempDay = daysInMonth;
+                            });
+                          },
                         ),
-
-                        // Day picker
-                        Expanded(
-                          child: _buildWheelPicker(
-                            context: context,
-                            items: List.generate(
-                              DateTime(selectedYear, selectedMonth + 1, 0).day,
-                              (index) => '${index + 1}',
-                            ),
-                            selectedIndex: selectedDay - 1,
-                            onChanged: (index) {
-                              setState(() {
-                                selectedDay = index + 1;
-                              });
-                              HapticFeedback.selectionClick();
-                            },
-                            fontSize: 18,
-                          ),
+                        _buildDatePickerWheel(
+                          context: modalContext, // Use modalContext
+                          items: List.generate(DateTime(tempYear, tempMonth + 1, 0).day, (index) => '${index + 1}'),
+                          initialItem: tempDay - 1,
+                           onSelectedItemChanged: (index) => setModalState(() => tempDay = index + 1),
                         ),
-
-                        // Year picker
-                        Expanded(
-                          child: _buildWheelPicker(
-                            context: context,
-                            items: List.generate(
-                              DateTime.now().year - 1920 + 1,
-                              (index) => '${1920 + index}',
-                            ),
-                            selectedIndex: selectedYear - 1920,
-                            onChanged: (index) {
-                              setState(() {
-                                selectedYear = 1920 + index;
-                                // Adjust day if needed (e.g., Feb 29 in non-leap year)
-                                final daysInMonth = DateTime(selectedYear, selectedMonth + 1, 0).day;
-                                if (selectedDay > daysInMonth) {
-                                  selectedDay = daysInMonth;
-                                }
-                              });
-                              HapticFeedback.selectionClick();
-                            },
-                            fontSize: 18,
-                          ),
+                        _buildDatePickerWheel(
+                          context: modalContext, // Use modalContext
+                          items: List.generate(DateTime.now().year - 1920 + 1, (index) => '${1920 + index}'),
+                          initialItem: tempYear - 1920,
+                          onSelectedItemChanged: (index) {
+                            setModalState(() {
+                              tempYear = 1920 + index;
+                              final daysInMonth = DateTime(tempYear, tempMonth + 1, 0).day;
+                              if (tempDay > daysInMonth) tempDay = daysInMonth;
+                            });
+                          },
                         ),
                       ],
                     ),
                   ),
-
-                  // Buttons
                   Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Row(
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: () => Navigator.pop(modalContext), // Use modalContext
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              side: BorderSide(color: AppColors.primaryColor),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              side: BorderSide(color: colorScheme.outline),
                             ),
-                            child: Text(
-                              'Cancel',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.primaryColor,
-                              ),
-                            ),
+                            child: Text('Cancel', style: textTheme.labelLarge?.copyWith(color: colorScheme.primary)),
                           ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: ElevatedButton(
+                          child: FilledButton(
                             onPressed: () {
-                              final newDate = DateTime(selectedYear, selectedMonth, selectedDay);
-                              setState(() {
-                                this.setState(() {
-                                  _selectedDate = newDate;
-                                });
+                              setState(() { // Update main screen state
+                                _selectedDate = DateTime(tempYear, tempMonth, tempDay);
                               });
-                              Navigator.pop(context);
+                              Navigator.pop(modalContext); // Use modalContext
                               HapticFeedback.mediumImpact();
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryColor,
-                              foregroundColor: Colors.white,
+                            style: FilledButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             ),
-                            child: Text(
-                              'Confirm',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            child: Text('Confirm', style: textTheme.labelLarge),
                           ),
                         ),
                       ],
@@ -512,86 +414,64 @@ class _GenderScreenState extends State<GenderScreen> {
     );
   }
 
-  // Helper method to build a wheel picker
-  Widget _buildWheelPicker({
+  Widget _buildDatePickerWheel({
     required BuildContext context,
     required List<String> items,
-    required int selectedIndex,
-    required Function(int) onChanged,
-    required double fontSize,
+    required int initialItem,
+    required ValueChanged<int> onSelectedItemChanged,
   }) {
-    return Container(
-      height: 200,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: ListWheelScrollView.useDelegate(
-        itemExtent: 40,
-        perspective: 0.005,
-        diameterRatio: 1.5,
-        physics: const FixedExtentScrollPhysics(),
-        controller: FixedExtentScrollController(initialItem: selectedIndex),
-        onSelectedItemChanged: onChanged,
-        childDelegate: ListWheelChildBuilderDelegate(
-          childCount: items.length,
-          builder: (context, index) {
-            final isSelected = index == selectedIndex;
-            return Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                decoration: isSelected
-                    ? BoxDecoration(
-                        color: AppColors.primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      )
-                    : null,
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Expanded(
+      child: SizedBox(
+        height: 200, // Fixed height for the wheel
+        child: ListWheelScrollView.useDelegate(
+          itemExtent: 40,
+          perspective: 0.005,
+          diameterRatio: 1.2, // Adjusted for better M3 feel
+          physics: const FixedExtentScrollPhysics(),
+          controller: FixedExtentScrollController(initialItem: initialItem),
+          onSelectedItemChanged: onSelectedItemChanged,
+          useMagnifier: true, // M3 style magnification
+          magnification: 1.1, // M3 style magnification
+          childDelegate: ListWheelChildLoopingListDelegate( // Or ListWheelChildListDelegate if no looping
+            children: items.map<Widget>((item) {
+              // Determine if this item is the "current" one for styling
+              // This is a bit tricky as ListWheelScrollView doesn't directly expose selected item in builder
+              // For simplicity, we'll style all items similarly and rely on magnification
+              return Center(
                 child: Text(
-                  items[index],
-                  style: GoogleFonts.poppins(
-                    fontSize: fontSize,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                    color: isSelected ? AppColors.primaryColor : Colors.black54,
-                  ),
+                  item,
+                  style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
                 ),
-              ),
-            );
-          },
+              );
+            }).toList(),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildNextButton() {
+
+  Widget _buildNextButton(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return SizedBox(
       width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
+      height: 56, // M3 standard button height
+      child: FilledButton(
         onPressed: () {
-          // Update user model with selected gender and date of birth
           final updatedUser = widget.user.copyWith(
             gender: _selectedGender,
             dateOfBirth: _selectedDate,
           );
-
-          // Call onNext callback with updated user
           widget.onNext(updatedUser);
+          HapticFeedback.mediumImpact();
         },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          elevation: 0,
+        style: FilledButton.styleFrom(
+           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), // M3 radius
         ),
-        child: Text(
-          'Next',
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        child: Text('Next', style: textTheme.labelLarge),
       ),
     );
   }

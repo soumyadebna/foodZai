@@ -2655,23 +2655,25 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 _buildTodaysDiarySection(backgroundColor, textColor, subtitleColor, selectedDateFoodItems),
 
                 // Today's Meals page (now second)
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: backgroundColor,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      _buildSimpleMealRow(
-                        'Breakfast',
+                SingleChildScrollView( // Added SingleChildScrollView
+                  physics: const BouncingScrollPhysics(), // Added physics
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: backgroundColor,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        _buildSimpleMealRow(
+                          'Breakfast',
                         Icons.wb_sunny_rounded,
                         Colors.orange,
                         'Recommended 300-450 kcal',
@@ -2712,8 +2714,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ],
                   ),
                 ),
-              ],
-            ),
+              ), // Closed SingleChildScrollView
+            ],
           ),
         ],
       ),
