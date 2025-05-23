@@ -1297,16 +1297,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     final textColor = isDarkMode ? Colors.white : Colors.black;
     final subtitleColor = isDarkMode ? Colors.grey[400] : Colors.grey[600];
 
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          _buildAppBar(textColor ?? Colors.black, isDarkMode),
-          _buildDateSelector(),
-          _buildTabContent(textColor ?? Colors.black, subtitleColor ?? Colors.grey[600]!, isDarkMode),
-          const SizedBox(height: 100), // Space for FAB
-        ],
-      ),
+    return CustomScrollView(
+      physics: const ClampingScrollPhysics(),
+      slivers: [
+        SliverToBoxAdapter(
+          child: _buildAppBar(textColor ?? Colors.black, isDarkMode),
+        ),
+        SliverToBoxAdapter(
+          child: _buildDateSelector(),
+        ),
+        SliverToBoxAdapter(
+          child: _buildTabContent(textColor ?? Colors.black, subtitleColor ?? Colors.grey[600]!, isDarkMode),
+        ),
+        SliverToBoxAdapter(
+          child: const SizedBox(height: 100), // Space for FAB
+        ),
+      ],
     );
   }
 
@@ -2642,9 +2648,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
           ),
           SizedBox(
-            height: 350, // Fixed height for the PageView
+            // height: 350, // Fixed height for the PageView - REMOVED
             child: PageView(
               controller: _mealsPageController,
+              physics: const NeverScrollableScrollPhysics(),
               onPageChanged: (index) {
                 setState(() {
                   _currentMealsPage = index;
@@ -2819,7 +2826,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       ),
       child: ListView.builder(
         shrinkWrap: true,
-        physics: const BouncingScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: uniqueFoodItems.length,
         itemBuilder: (context, index) {
           final food = uniqueFoodItems[index];
