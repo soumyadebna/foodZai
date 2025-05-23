@@ -1524,7 +1524,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: 7,
-            physics: const BouncingScrollPhysics(),
+            physics: const ClampingScrollPhysics(),
             itemBuilder: (context, index) {
               final isSelected = index == selectedDayIndex;
               final date = dayNumbers[index];
