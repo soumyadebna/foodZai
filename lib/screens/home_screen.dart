@@ -1293,20 +1293,43 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget _buildHomeTab() {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDarkMode ? Colors.grey[900] : Colors.grey[50];
+    final backgroundColor = isDarkMode ? Colors.grey[900] : Colors.grey[50]; // Not needed for this step
     final textColor = isDarkMode ? Colors.white : Colors.black;
-    final subtitleColor = isDarkMode ? Colors.grey[400] : Colors.grey[600];
+    final subtitleColor = isDarkMode ? Colors.grey[400] : Colors.grey[600]; // Not needed for this step
 
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          _buildAppBar(textColor ?? Colors.black, isDarkMode),
-          _buildDateSelector(),
-          _buildTabContent(textColor ?? Colors.black, subtitleColor ?? Colors.grey[600]!, isDarkMode),
-          const SizedBox(height: 100), // Space for FAB
-        ],
-      ),
+    return CustomScrollView(
+      physics: const ClampingScrollPhysics(),
+      slivers: [
+        SliverToBoxAdapter(
+          child: _buildAppBar(textColor, isDarkMode), // Assuming _buildAppBar is available and correct
+        ),
+        // SliverToBoxAdapter(
+        //   child: _buildDateSelector(),
+        // ),
+        // SliverToBoxAdapter(
+        //   child: _buildCaloriesCounter(textColor, subtitleColor, isDarkMode),
+        // ),
+        // SliverToBoxAdapter(
+        //   child: _buildMacronutrientsSection(textColor, subtitleColor, isDarkMode),
+        // ),
+        // SliverToBoxAdapter(
+        //   child: _buildWaterTracker(textColor, subtitleColor, isDarkMode),
+        // ),
+        // SliverToBoxAdapter(
+        //   child: _buildMealTimesSection(textColor, subtitleColor, isDarkMode),
+        // ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) {
+              return ListTile(
+                leading: Icon(Icons.album, color: Colors.primaries[index % Colors.primaries.length]),
+                title: Text('Test Sliver Item $index'),
+              );
+            },
+            childCount: 50, // Create 50 items
+          ),
+        ),
+      ],
     );
   }
 
@@ -1518,7 +1541,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: 7,
-            physics: const BouncingScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               final isSelected = index == selectedDayIndex;
               final date = dayNumbers[index];
@@ -1527,6 +1550,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                              date.year == now.year;
 
               return GestureDetector(
+                behavior: HitTestBehavior.opaque,
                 onTap: () {
                   setState(() {
                     _selectedDate = date;
@@ -2642,9 +2666,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
           ),
           SizedBox(
-            height: 350, // Fixed height for the PageView
+            // height: 350, // Fixed height for the PageView - REMOVED
             child: PageView(
               controller: _mealsPageController,
+              physics: const NeverScrollableScrollPhysics(),
               onPageChanged: (index) {
                 setState(() {
                   _currentMealsPage = index;
@@ -2819,7 +2844,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       ),
       child: ListView.builder(
         shrinkWrap: true,
-        physics: const BouncingScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: uniqueFoodItems.length,
         itemBuilder: (context, index) {
           final food = uniqueFoodItems[index];
